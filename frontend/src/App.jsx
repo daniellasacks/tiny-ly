@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import Welcome from './components/Welcome/Welcome';
 import Login from './pages/LoginPage';
 import Register from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -14,11 +15,12 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/baby/:babyId" element={<ProtectedRoute><BabyProfilePage /></ProtectedRoute>} />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
       </LanguageProvider>
