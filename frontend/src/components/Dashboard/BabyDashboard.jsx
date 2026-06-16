@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import { LanguageContext } from '../../context/LanguageContext';
 import api from '../../services/api';
+import { t } from '../../translations';
 import BabyCard from './BabyCard';
 import AddBabyModal from './AddBabyModal';
+import LanguageSwitcher from '../Common/LanguageSwitcher';
 
 export default function BabyDashboard() {
   const [babies, setBabies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const { language } = useContext(LanguageContext);
+  const isHebrew = language === 'he';
 
   useEffect(() => {
     fetchBabies();
@@ -31,30 +36,33 @@ export default function BabyDashboard() {
   };
 
   if (loading) {
-    return <div style={{ padding: '50px', textAlign: 'center' }}>Loading...</div>;
+    return <div style={{ padding: '50px', textAlign: 'center' }}>{t('message.loading', language)}</div>;
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', direction: isHebrew ? 'rtl' : 'ltr' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <div>
-          <h1>My Babies</h1>
-          <p>Welcome, {user?.fullName}!</p>
+          <h1>{t('dashboard.title', language)}</h1>
+          <p>{t('dashboard.welcome', language)}, {user?.fullName}!</p>
         </div>
-        <button onClick={logout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <LanguageSwitcher />
+          <button onClick={logout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
+            {t('nav.logout', language)}
+          </button>
+        </div>
       </div>
 
       {babies.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '50px' }}>
-          <h2>No babies yet</h2>
-          <p>Start tracking your baby's care!</p>
+          <h2>{t('dashboard.empty', language)}</h2>
+          <p>{t('dashboard.empty_subtitle', language)}</p>
           <button
             onClick={() => setShowAddModal(true)}
             style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer', marginTop: '20px' }}
           >
-            + Add Baby
+            {t('dashboard.add_baby', language)}
           </button>
         </div>
       ) : (
@@ -68,7 +76,7 @@ export default function BabyDashboard() {
             onClick={() => setShowAddModal(true)}
             style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer', width: '100%' }}
           >
-            + Add Another Baby
+            {t('dashboard.add_another', language)}
           </button>
         </div>
       )}
