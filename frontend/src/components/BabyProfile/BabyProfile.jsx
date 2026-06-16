@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../services/api';
 import { LanguageContext } from '../../context/LanguageContext';
 import { t } from '../../translations';
@@ -11,6 +12,7 @@ export default function BabyProfile() {
   const [baby, setBaby] = useState(null);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [newActivity, setNewActivity] = useState(null);
   const isHebrew = language === 'he';
 
   const fetchBaby = useCallback(async () => {
@@ -41,12 +43,14 @@ export default function BabyProfile() {
 
   const logActivity = async (type) => {
     try {
+      setNewActivity(type);
       const response = await api.post('/activities', {
         babyId,
         type,
         timestamp: new Date()
       });
       setActivities([response.data, ...activities]);
+      setTimeout(() => setNewActivity(null), 1000);
     } catch (error) {
       alert(t('message.failed', language));
     }
@@ -61,7 +65,25 @@ export default function BabyProfile() {
   };
 
   if (loading || !baby) {
-    return <div style={{ padding: '50px', textAlign: 'center' }}>{t('message.loading', language)}</div>;
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid rgba(255, 255, 255, 0.3)',
+            borderTop: '4px solid white',
+            borderRadius: '50%'
+          }} />
+        </motion.div>
+      </div>
+    );
   }
 
   const getActivityIcon = (type) => {
@@ -70,15 +92,19 @@ export default function BabyProfile() {
   };
 
   return (
-    <div style={{
+    <motion.div
+      style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '30px 20px',
       direction: isHebrew ? 'rtl' : 'ltr',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
+    }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <button
+        <motion.button
           onClick={() => navigate('/dashboard')}
           style={{
             marginBottom: '30px',
@@ -88,16 +114,18 @@ export default function BabyProfile() {
             color: 'white',
             borderRadius: '25px',
             cursor: 'pointer',
-            fontWeight: '600',
-            transition: 'all 0.3s'
+            fontWeight: '600'
           }}
-          onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-          onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+          whileHover={{ background: 'rgba(255, 255, 255, 0.3)' }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
         >
           ← {t('nav.back', language)}
-        </button>
+        </motion.button>
 
-        <div style={{
+        <motion.div
+          style={{
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(20px)',
           borderRadius: '24px',
@@ -106,8 +134,13 @@ export default function BabyProfile() {
           textAlign: 'center',
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1)',
           border: '1px solid rgba(255, 255, 255, 0.3)'
-        }}>
-          <div style={{
+        }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.div
+            style={{
             width: '140px',
             height: '140px',
             borderRadius: '50%',
@@ -120,9 +153,12 @@ export default function BabyProfile() {
             justifyContent: 'center',
             fontSize: '80px',
             boxShadow: '0 15px 40px rgba(0, 0, 0, 0.15)'
-          }}>
+          }}
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
             {baby.gender === 'girl' ? '👧' : baby.gender === 'boy' ? '👦' : '👶'}
-          </div>
+          </motion.div>
           <h1 style={{ fontSize: '40px', fontWeight: '800', color: '#333', margin: '0 0 12px 0' }}>
             {baby.name}
           </h1>
@@ -134,9 +170,10 @@ export default function BabyProfile() {
               ⚖️ {t('baby.weight', language)}: {baby.currentWeight} kg
             </p>
           )}
-        </div>
+        </motion.div>
 
-        <div style={{
+        <motion.div
+          style={{
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(20px)',
           borderRadius: '24px',
@@ -144,17 +181,26 @@ export default function BabyProfile() {
           marginBottom: '30px',
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1)',
           border: '1px solid rgba(255, 255, 255, 0.3)'
-        }}>
+        }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <h3 style={{ color: '#333', fontSize: '18px', fontWeight: '700', margin: '0 0 20px 0' }}>
             {t('baby.log_activity', language)}
           </h3>
-          <div style={{
+          <motion.div
+            style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
             gap: '12px'
-          }}>
+          }}
+            variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }}
+            initial="hidden"
+            animate="visible"
+          >
             {['feed', 'diaper', 'medicine', 'sleep', 'play'].map((activity) => (
-              <button
+              <motion.button
                 key={activity}
                 onClick={() => logActivity(activity)}
                 style={{
@@ -165,36 +211,37 @@ export default function BabyProfile() {
                   color: 'white',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  transition: 'all 0.3s',
                   fontSize: '32px',
                   marginBottom: '8px'
                 }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-5px)';
-                  e.target.style.boxShadow = '0 10px 30px rgba(102, 126, 234, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = 'none';
-                }}
+                whileHover={{ y: -5, boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)' }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
               >
                 <div>{getActivityIcon(activity)}</div>
                 <div style={{ fontSize: '12px', marginTop: '8px', fontWeight: '600' }}>
                   {t(`activity.${activity}`, language)}
                 </div>
-              </button>
+              </motion.button>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div style={{
+        <motion.div
+          style={{
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(20px)',
           borderRadius: '24px',
           padding: '30px',
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1)',
           border: '1px solid rgba(255, 255, 255, 0.3)'
-        }}>
+        }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
           <h3 style={{ color: '#333', fontSize: '18px', fontWeight: '700', margin: '0 0 20px 0' }}>
             {t('baby.timeline', language)}
           </h3>
@@ -203,36 +250,46 @@ export default function BabyProfile() {
               {t('baby.no_activities', language)}
             </p>
           ) : (
-            <div>
-              {activities.map((activity) => (
-                <div
+            <motion.div>
+              <AnimatePresence>
+                {activities.map((activity) => (
+                  <motion.div
                   key={activity._id}
                   style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #eee',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    transition: 'all 0.3s'
+                      padding: '16px',
+                      borderBottom: '1px solid #eee',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(102, 126, 234, 0.05)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    initial={{ opacity: 0, x: isHebrew ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: isHebrew ? 20 : -20 }}
+                    transition={{ duration: 0.3 }}
+                    whileHover={{ background: 'rgba(102, 126, 234, 0.05)' }}
                 >
-                  <span style={{ fontSize: '24px' }}>{getActivityIcon(activity.type)}</span>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ margin: '0', fontWeight: '600', color: '#333' }}>
-                      {t(`activity.${activity.type}`, language)}
-                    </p>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#999' }}>
-                      {new Date(activity.timestamp).toLocaleString(language === 'he' ? 'he-IL' : 'en-US')}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    <motion.span
+                      style={{ fontSize: '24px' }}
+                      animate={newActivity === activity.type ? { scale: [1, 1.3, 1] } : {}}
+                      transition={{ duration: 0.6 }}
+                    >
+                      {getActivityIcon(activity.type)}
+                    </motion.span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: '0', fontWeight: '600', color: '#333' }}>
+                        {t(`activity.${activity.type}`, language)}
+                      </p>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#999' }}>
+                        {new Date(activity.timestamp).toLocaleString(language === 'he' ? 'he-IL' : 'en-US')}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

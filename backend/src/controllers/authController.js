@@ -34,20 +34,23 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, phone, code } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password required' });
+    if (!phone || !code) {
+      return res.status(400).json({ message: 'Phone and code required' });
     }
 
-    const user = await User.findOne({ email });
+    const DEMO_CODE = '12345';
+
+    if (code !== DEMO_CODE) {
+      return res.status(401).json({ message: 'Invalid code' });
+    }
+
+    let user = await User.findOne({ phone });
+
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      user = new User({ name: name || 'User', phone, code: DEMO_CODE });
+      await user.save();
     }
 
     const token = jwt.sign(
@@ -60,8 +63,8 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        email: user.email,
-        fullName: user.fullName
+        name: user.name,
+        phone: user.phone
       }
     });
   } catch (error) {

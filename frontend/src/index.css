@@ -19,3 +19,75 @@ button {
 input {
   transition: all 0.2s ease;
 }
+
+/* Global Animations */
+* {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Page Fade In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Button Press */
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Input Focus Glow */
+input:focus {
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+button:active {
+  animation: buttonPress 0.2s ease-out;
+}
+
+/* Card Entrance */
+.baby-card {
+  animation: fadeIn 0.5s ease-out;
+}

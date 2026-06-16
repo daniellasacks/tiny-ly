@@ -2,21 +2,37 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    trim: true,
+    default: null
+  },
+  phone: {
+    type: String,
+    unique: true,
+    sparse: true,
+    default: null
+  },
+  code: {
+    type: String,
+    default: null
+  },
   fullName: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    default: null
   },
   email: {
     type: String,
-    required: true,
     unique: true,
-    lowercase: true
+    sparse: true,
+    lowercase: true,
+    default: null
   },
   password: {
     type: String,
-    required: true,
-    minlength: 6
+    minlength: 6,
+    default: null
   },
   createdAt: {
     type: Date,
@@ -25,6 +41,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function(next) {
+  if (!this.password) return next();
   if (!this.isModified('password')) return next();
   try {
     const salt = await bcrypt.genSalt(10);
@@ -36,6 +53,7 @@ userSchema.pre('save', async function(next) {
 });
 
 userSchema.methods.matchPassword = async function(enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
