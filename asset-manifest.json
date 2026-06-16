@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/tiny-ly/static/css/main.f91c0b0d.css",
-    "main.js": "/tiny-ly/static/js/main.f48ec1ff.js",
+    "main.js": "/tiny-ly/static/js/main.e6e9b6e6.js",
     "index.html": "/tiny-ly/index.html",
     "main.f91c0b0d.css.map": "/tiny-ly/static/css/main.f91c0b0d.css.map",
-    "main.f48ec1ff.js.map": "/tiny-ly/static/js/main.f48ec1ff.js.map"
+    "main.e6e9b6e6.js.map": "/tiny-ly/static/js/main.e6e9b6e6.js.map"
   },
   "entrypoints": [
     "static/css/main.f91c0b0d.css",
-    "static/js/main.f48ec1ff.js"
+    "static/js/main.e6e9b6e6.js"
   ]
 }
