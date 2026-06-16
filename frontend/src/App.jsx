@@ -10,7 +10,7 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 function App() {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <LanguageProvider>
         <AuthProvider>
           <Routes>
